@@ -111,7 +111,7 @@ bool MPITaskMatrixClustering::run() {
 
   size_t rows_per_process = rows / world.size();
   size_t extra_rows = rows % world.size();
-  size_t start_row = (world.rank() * rows_per_process) + std::min<size_t>(static_cast<size_t>(world.rank()), extra_rows);
+  size_t start_row = (world.rank() * rows_per_process) + std::min<size_t>(world.rank(), extra_rows);
   size_t end_row = start_row + rows_per_process + (static_cast<size_t>(world.rank()) < extra_rows ? 1 : 0);
 
   std::vector<int> local_classification(end_row - start_row, 0);
