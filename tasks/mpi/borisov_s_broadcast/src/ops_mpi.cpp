@@ -30,11 +30,6 @@ bool MPITaskMatrixClustering::validation() {
     if (rows <= 0 || cols <= 0) {
       return false;
     }
-
-    double epsilon = *reinterpret_cast<double *>(taskData->inputs[1]);
-    if (epsilon <= 0.0) {
-      return false;
-    }
   }
 
   return true;

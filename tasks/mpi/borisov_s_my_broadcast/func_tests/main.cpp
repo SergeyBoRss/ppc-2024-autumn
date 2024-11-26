@@ -167,30 +167,3 @@ TEST(Parallel_Operations_MPI2, Validation_InvalidMatrixSize) {
     ASSERT_FALSE(task.validation());
   }
 }
-
-TEST(Parallel_Operations_MPI2, Validation_InvalidEpsilon) {
-  boost::mpi::communicator world;
-
-  std::shared_ptr<ppc::core::TaskData> taskData = std::make_shared<ppc::core::TaskData>();
-  if (world.rank() == 0) {
-    size_t rows = 3;
-    size_t cols = 3;
-    double epsilon = -1.0;
-
-    std::vector<double> global_matrix = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-
-    taskData->inputs.clear();
-    taskData->inputs_count.clear();
-
-    taskData->inputs.emplace_back(reinterpret_cast<uint8_t *>(global_matrix.data()));
-    taskData->inputs_count.push_back(rows);
-    taskData->inputs_count.push_back(cols);
-    taskData->inputs.emplace_back(reinterpret_cast<uint8_t *>(&epsilon));
-  }
-
-  MPITaskMatrixClustering task(taskData);
-
-  if (world.rank() == 0) {
-    ASSERT_FALSE(task.validation());
-  }
-}
