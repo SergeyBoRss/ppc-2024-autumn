@@ -64,6 +64,8 @@ TEST(gordeeva_t_sleeping_barber_mpi, Test_End_To_End1) {
 
   gordeeva_t_sleeping_barber_mpi::TestMPITaskParallel testMpiTaskParallel(taskDataPar);
 
+  std::cout << "[ MY1 ]" << world.size() << std::endl;
+
   if (world.size() < 3) {
     ASSERT_FALSE(testMpiTaskParallel.validation());
   } else {
@@ -93,6 +95,8 @@ TEST(gordeeva_t_sleeping_barber_mpi, Test_End_To_End2) {
   taskDataPar->outputs_count.emplace_back(sizeof(global_res));
 
   gordeeva_t_sleeping_barber_mpi::TestMPITaskParallel testMpiTaskParallel(taskDataPar);
+
+  std::cout << "[ MY2 ]" << world.size() << std::endl;
 
   if (world.size() < 3) {
     ASSERT_FALSE(testMpiTaskParallel.validation());
