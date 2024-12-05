@@ -24,6 +24,8 @@ bool gordeeva_t_sleeping_barber_mpi::TestMPITaskParallel::pre_processing() {
 bool gordeeva_t_sleeping_barber_mpi::TestMPITaskParallel::validation() {
   internal_order_test();
 
+  std::cout << "[ MY3 ]" << world.rank() << std::endl;
+
   if (world.rank() == 0) {
     if (taskData->inputs_count.empty() || taskData->inputs_count[0] <= 0) {
       std::cerr << "[VALIDATION] Invalid number of chairs: " << taskData->inputs_count[0] << std::endl;

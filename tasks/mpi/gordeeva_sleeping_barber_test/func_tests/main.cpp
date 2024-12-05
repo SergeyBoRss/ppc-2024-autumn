@@ -67,7 +67,9 @@ TEST(gordeeva_t_sleeping_barber_mpi, Test_End_To_End1) {
   std::cout << "[ MY1 ]" << world.size() << std::endl;
 
   if (world.size() < 3) {
-    ASSERT_FALSE(testMpiTaskParallel.validation());
+    if (world.rank() == 0) {
+      ASSERT_FALSE(testMpiTaskParallel.validation());
+    }
   } else {
     ASSERT_TRUE(testMpiTaskParallel.validation());
     ASSERT_TRUE(testMpiTaskParallel.pre_processing());
@@ -99,7 +101,9 @@ TEST(gordeeva_t_sleeping_barber_mpi, Test_End_To_End2) {
   std::cout << "[ MY2 ]" << world.size() << std::endl;
 
   if (world.size() < 3) {
-    ASSERT_FALSE(testMpiTaskParallel.validation());
+    if (world.rank() == 0) {
+      ASSERT_FALSE(testMpiTaskParallel.validation());
+    }
   } else {
     ASSERT_TRUE(testMpiTaskParallel.validation());
     ASSERT_TRUE(testMpiTaskParallel.pre_processing());
