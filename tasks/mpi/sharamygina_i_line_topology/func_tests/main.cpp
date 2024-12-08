@@ -241,6 +241,8 @@ TEST(sharamygina_i_line_topology_mpi, zeroNumberOfElements) {
 TEST(sharamygina_i_line_topology_mpi, equalSenderAndRecipient) {
   boost::mpi::communicator world;
 
+  std::cout << "[ MY1 ]" << world.rank() << std::endl;
+
   int size = 20000;
   int sendler = 0;
 
@@ -264,6 +266,7 @@ TEST(sharamygina_i_line_topology_mpi, equalSenderAndRecipient) {
 
   sharamygina_i_line_topology_mpi::line_topology_mpi testTask(taskData);
   ASSERT_FALSE(testTask.validation());
+  std::cout << "[ MY2 ]" << world.rank() << std::endl;
 }
 
 TEST(sharamygina_i_line_topology_mpi, vectorOf1024) {
