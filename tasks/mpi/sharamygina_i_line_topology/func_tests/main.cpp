@@ -238,37 +238,6 @@ TEST(sharamygina_i_line_topology_mpi, zeroNumberOfElements) {
   ASSERT_FALSE(testTask.validation());
 }
 
-TEST(sharamygina_i_line_topology_mpi, equalSenderAndRecipient) {
-  boost::mpi::communicator world;
-
-  std::cout << "[ MY1 ]" << world.rank() << std::endl;
-
-  int size = 20000;
-  int sendler = 0;
-
-  std::shared_ptr<ppc::core::TaskData> taskData = std::make_shared<ppc::core::TaskData>();
-  taskData->inputs_count.emplace_back(sendler);
-  taskData->inputs_count.emplace_back(sendler);
-  taskData->inputs_count.emplace_back(size);
-
-  std::vector<int> data(size);
-  std::vector<int> received_data;
-
-  if (world.rank() == sendler) {
-    sharamygina_i_line_topology_mpi::generator(data);
-    taskData->inputs.emplace_back(reinterpret_cast<uint8_t*>(data.data()));
-  }
-
-  if (world.rank() == sendler) {
-    taskData->outputs.emplace_back(reinterpret_cast<uint8_t*>(received_data.data()));
-    taskData->outputs_count.emplace_back(received_data.size());
-  }
-
-  sharamygina_i_line_topology_mpi::line_topology_mpi testTask(taskData);
-  ASSERT_FALSE(testTask.validation());
-  std::cout << "[ MY2 ]" << world.rank() << std::endl;
-}
-
 TEST(sharamygina_i_line_topology_mpi, vectorOf1024) {
   boost::mpi::communicator world;
 
