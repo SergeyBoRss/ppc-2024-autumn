@@ -64,7 +64,7 @@ TEST(gordeeva_t_sleeping_barber_mpi, Test_End_To_End1) {
 
   gordeeva_t_sleeping_barber_mpi::TestMPITaskParallel testMpiTaskParallel(taskDataPar);
 
-  std::cout << "[ MY1 ]" << world.size() << std::endl;
+  // std::cout << "[ MY1 ]" << world.size() << std::endl;
 
   if (world.size() < 3) {
     if (world.rank() == 0) {
@@ -98,7 +98,7 @@ TEST(gordeeva_t_sleeping_barber_mpi, Test_End_To_End2) {
 
   gordeeva_t_sleeping_barber_mpi::TestMPITaskParallel testMpiTaskParallel(taskDataPar);
 
-  std::cout << "[ MY2 ]" << world.size() << std::endl;
+  // std::cout << "[ MY2 ]" << world.size() << std::endl;
 
   if (world.size() < 3) {
     if (world.rank() == 0) {

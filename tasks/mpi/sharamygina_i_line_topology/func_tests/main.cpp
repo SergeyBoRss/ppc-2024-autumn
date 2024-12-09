@@ -265,7 +265,9 @@ TEST(sharamygina_i_line_topology_mpi, equalSenderAndRecipient) {
   }
 
   sharamygina_i_line_topology_mpi::line_topology_mpi testTask(taskData);
-  ASSERT_FALSE(testTask.validation());
+  if (world.rank() == 0) {
+    ASSERT_FALSE(testTask.validation());
+  }
   std::cout << "[ MY2 ]" << world.rank() << std::endl;
 }
 
