@@ -125,10 +125,7 @@ foreach(TASK_TYPE ${LIST_OF_TASKS})
     endif (USE_PERF_TESTS)
 
     set(LIST_OF_EXEC_TESTS "")
-    set(LIB_SOURCE_FILES ""
-            mpi/sharamygina_i_line_topology/func_tests/main.cpp
-            mpi/sharamygina_i_line_topology/func_tests/main.cpp
-            mpi/sharamygina_i_line_topology/func_tests/main.cpp)
+    set(LIB_SOURCE_FILES "")
     set(SRC_RES "")
     set(FUNC_TESTS_SOURCE_FILES "")
     set(PERF_TESTS_SOURCE_FILES "")
