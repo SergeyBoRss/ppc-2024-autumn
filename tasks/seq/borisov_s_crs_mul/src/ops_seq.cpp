@@ -24,8 +24,6 @@ bool CrsMatrixMulTask::validation() {
   int A_nrows = static_cast<int>(taskData->inputs_count[2] - 1);
   int B_nrows = static_cast<int>(taskData->inputs_count[5] - 1);
 
-  std::cout << "TEST-1" << std::endl;
-
   return A_nrows > 0 && B_nrows > 0;
 }
 
@@ -115,26 +113,6 @@ bool CrsMatrixMulTask::post_processing() {
   taskData->outputs[0] = reinterpret_cast<uint8_t*>(C_values_.data());
   taskData->outputs[1] = reinterpret_cast<uint8_t*>(C_col_index_.data());
   taskData->outputs[2] = reinterpret_cast<uint8_t*>(C_row_ptr_.data());
-
-  std::cout << "Post-processing complete:\n";
-  std::cout << "Matrix C:\n";
-  std::cout << "  Values: ";
-  for (const auto& val : C_values_) {
-    std::cout << val << " ";
-  }
-  std::cout << "\n";
-
-  std::cout << "  Column indices: ";
-  for (const auto& col : C_col_index_) {
-    std::cout << col << " ";
-  }
-  std::cout << "\n";
-
-  std::cout << "  Row pointers: ";
-  for (const auto& row : C_row_ptr_) {
-    std::cout << row << " ";
-  }
-  std::cout << "\n";
 
   return true;
 }

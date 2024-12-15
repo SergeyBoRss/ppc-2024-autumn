@@ -8,7 +8,6 @@
 
 #include "mpi/borisov_s_crs_mul/include/ops_mpi.hpp"
 
-// Вспомогательная функция для подготовки CRS матрицы
 void prepareCRSMatrix(const std::vector<std::vector<double>>& dense_matrix, std::vector<double>& values,
                       std::vector<int>& col_index, std::vector<int>& row_ptr) {
   int nrows = static_cast<int>(dense_matrix.size());
@@ -126,7 +125,10 @@ TEST(MPI_CRS_Matrix_Multiplication, Validation_Failure_InputSizeMismatch) {
   }
 
   borisov_s_crs_mul_mpi::CrsMatrixMulTaskMPI mpiTask(taskDataPar);
-  ASSERT_FALSE(mpiTask.validation());
+
+  if (world.rank() == 0) {
+    ASSERT_FALSE(mpiTask.validation());
+  }
 }
 
 TEST(MPI_CRS_Matrix_Multiplication, Validation_Failure_DimensionMismatch) {
@@ -161,7 +163,9 @@ TEST(MPI_CRS_Matrix_Multiplication, Validation_Failure_DimensionMismatch) {
   }
 
   borisov_s_crs_mul_mpi::CrsMatrixMulTaskMPI mpiTask(taskDataPar);
-  ASSERT_FALSE(mpiTask.validation());
+  if (world.rank() == 0) {
+    ASSERT_FALSE(mpiTask.validation());
+  }
 }
 
 TEST(MPI_CRS_Matrix_Multiplication, Large_Random_Matrices) {

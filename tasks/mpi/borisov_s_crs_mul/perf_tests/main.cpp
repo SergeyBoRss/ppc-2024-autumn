@@ -90,7 +90,6 @@ TEST(MPI_CRS_Matrix_Perf_Test, Test_Pipeline_Run) {
   }
 }
 
-// Тест на производительность: task_run
 TEST(MPI_CRS_Matrix_Perf_Test, Test_Task_Run) {
   boost::mpi::communicator world;
 
