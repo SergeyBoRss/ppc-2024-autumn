@@ -38,7 +38,7 @@ class TestMPITaskParallel : public ppc::core::Task {
   bool run() override;
   bool post_processing() override;
 
-  void batcher_merge(size_t rank1, size_t rank2);
+  void batcher_merge(size_t rank1, size_t rank2, std::vector<int>& local_input_local);
 
  private:
   std::vector<int> input_, local_input_;

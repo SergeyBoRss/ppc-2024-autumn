@@ -71,6 +71,50 @@ bool gordeeva_t_shell_sort_batcher_merge_mpi::TestMPITaskSequential::post_proces
   return true;
 }
 
+void gordeeva_t_shell_sort_batcher_merge_mpi::TestMPITaskParallel::batcher_merge(size_t rank1, size_t rank2,
+                                                                                 std::vector<int>& local_input_local) {
+  int rank = world.rank();
+  std::vector<int> received_data;
+
+  if (rank == rank1) {
+    // Отправка данных процессу rank2
+    std::cout << "[batcher_merge] Rank " << rank << " sending to Rank " << rank2 << std::endl;
+    world.send(rank2, 0, local_input_local);
+    // Получение данных от процесса rank2
+    std::cout << "[batcher_merge] Rank " << rank << " receiving from Rank " << rank2 << std::endl;
+    world.recv(rank2, 0, received_data);
+    std::cout << "[batcher_merge] Rank " << rank << " received data from Rank " << rank2 << std::endl;
+  } else if (rank == rank2) {
+    // Получение данных от процесса rank1
+    std::cout << "[batcher_merge] Rank " << rank << " receiving from Rank " << rank1 << std::endl;
+    world.recv(rank1, 0, received_data);
+    std::cout << "[batcher_merge] Rank " << rank << " received data from Rank " << rank1 << std::endl;
+    // Отправка данных процессу rank1
+    std::cout << "[batcher_merge] Rank " << rank << " sending to Rank " << rank1 << std::endl;
+    world.send(rank1, 0, local_input_local);
+    std::cout << "[batcher_merge] Rank " << rank << " sent data to Rank " << rank1 << std::endl;
+  }
+
+  // Слияние данных, если полученные данные не пусты
+  if (!received_data.empty()) {
+    std::vector<int> merged_data(local_input_local.size() + received_data.size());
+    std::merge(local_input_local.begin(), local_input_local.end(), received_data.begin(), received_data.end(),
+               merged_data.begin());
+
+    if (rank == rank1) {
+      // Сохранение первых элементов после слияния
+      local_input_local.assign(merged_data.begin(), merged_data.begin() + local_input_local.size());
+      std::cout << "[batcher_merge] Rank " << rank << " updated local_input_local after merge with Rank " << rank2
+                << std::endl;
+    } else if (rank == rank2) {
+      // Сохранение последних элементов после слияния
+      local_input_local.assign(merged_data.end() - local_input_local.size(), merged_data.end());
+      std::cout << "[batcher_merge] Rank " << rank << " updated local_input_local after merge with Rank " << rank1
+                << std::endl;
+    }
+  }
+}
+
 bool gordeeva_t_shell_sort_batcher_merge_mpi::TestMPITaskParallel::pre_processing() {
   if (world.rank() == 0) {
     if (taskData->inputs.empty() || taskData->inputs_count.empty()) {
@@ -98,72 +142,79 @@ bool gordeeva_t_shell_sort_batcher_merge_mpi::TestMPITaskParallel::run() {
   size_t rank = world.rank();
   size_t size = world.size();
 
-  boost::mpi::broadcast(world, sz_mpi, 0);
+  // Отладочное сообщение
+  std::cout << "[MY0] Process " << rank << " started run()" << std::endl;
 
-  size_t delta = sz_mpi / size;
-  size_t ost = sz_mpi % size;
+  // 1. Broadcast размер массива sz_mpi
+  size_t sz_mpi_local = 0;
+  boost::mpi::broadcast(world, sz_mpi, 0);  // sz_mpi уже инициализирован в pre_processing
+  sz_mpi_local = sz_mpi;                    // Теперь все процессы знают sz_mpi
+
+  // Отладочное сообщение
+  std::cout << "[MY1] Process " << rank << " received sz_mpi: " << sz_mpi_local << std::endl;
+
+  // 2. Вычисление распределения данных
+  size_t delta = sz_mpi_local / size;
+  size_t ost = sz_mpi_local % size;
 
   std::vector<int> sz_rk(size, static_cast<int>(delta));
 
-  std::cout << "[ MY-4 ]" << ost << std::endl;
+  // Распределение остатка
   for (size_t i = 0; i < ost; ++i) {
     sz_rk[i]++;
-
-    std::cout << world.rank() << ": " << sz_rk[i] << std::endl;
   }
 
-  boost::mpi::broadcast(world, input_.data(), input_.size(), 0);
+  // Отладочное сообщение
+  if (rank == 0) {
+    std::cout << "[MY2] sz_rk: ";
+    for (auto sz : sz_rk) std::cout << sz << " ";
+    std::cout << std::endl;
+  }
 
-  local_input_.resize(sz_rk[rank]);
-  boost::mpi::scatterv(world, input_, sz_rk, local_input_.data(), 0);
+  // 3. Broadcast данные input_
+  // Только процесс 0 инициализирует input_, остальные резервируют место
+  if (rank != 0) {
+    input_.resize(sz_mpi_local);
+  }
+  boost::mpi::broadcast(world, input_.data(), sz_mpi_local, 0);
 
-  world.barrier();
-  shellSort(local_input_);
+  // Отладочное сообщение
+  std::cout << "[MY3] Process " << rank << " received input_ data." << std::endl;
 
+  // 4. Scatterv для распределения данных
+  std::vector<int> local_input(sz_rk[rank]);
+  boost::mpi::scatterv(world, input_, sz_rk, local_input.data(), 0);
+
+  // Отладочное сообщение
+  std::cout << "[MY4] Process " << rank << " received local_input of size " << local_input.size() << std::endl;
+
+  // 5. Сортировка локального подмассива
+  shellSort(local_input);
+
+  // Отладочное сообщение
+  std::cout << "[MY5] Process " << rank << " sorted local_input." << std::endl;
+
+  // 6. Пошаговое слияние подмассивов между процессами
   for (size_t i = 0; i < size; ++i) {
     if (rank % 2 == i % 2 && rank + 1 < size) {
-      batcher_merge(rank, rank + 1);
+      std::cout << "[MY6] Process " << rank << " merging with " << (rank + 1) << std::endl;
+      batcher_merge(rank, rank + 1, local_input);
     } else if (rank % 2 != i % 2 && rank > 0) {
-      batcher_merge(rank - 1, rank);
+      std::cout << "[MY7] Process " << rank << " merging with " << (rank - 1) << std::endl;
+      batcher_merge(rank - 1, rank, local_input);
     }
   }
 
-  std::cout << "Rank " << rank << " local_input size: " << local_input_.size() << std::endl;
+  // 7. Gatherv для сбора отсортированных данных на процесс 0
   if (rank == 0) {
-    std::cout << "Rank " << rank << " res_ size: " << res_.size() << std::endl;
-    for (size_t i = 0; i < sz_rk.size(); ++i) {
-      std::cout << "Expected size for rank " << i << ": " << sz_rk[i] << std::endl;
-    }
+    res_.resize(sz_mpi_local);
   }
+  boost::mpi::gatherv(world, local_input.data(), local_input.size(), res_.data(), sz_rk, 0);
 
-  boost::mpi::gatherv(world, local_input_.data(), local_input_.size(), res_.data(), sz_rk, 0);
+  // Отладочное сообщение
+  std::cout << "[MY8] Process " << rank << " completed gatherv." << std::endl;
 
-  std::cout << "[ MY5 ]" << world.rank() << std::endl;
   return true;
-}
-
-void gordeeva_t_shell_sort_batcher_merge_mpi::TestMPITaskParallel::batcher_merge(size_t rank1, size_t rank2) {
-  int rank = world.rank();
-  std::vector<int> arr;
-
-  if (rank == rank1) {
-    world.send(static_cast<int>(rank2), 0, local_input_);
-    world.recv(static_cast<int>(rank2), 0, arr);
-  } else if (rank == rank2) {
-    world.recv(static_cast<int>(rank1), 0, arr);
-    world.send(static_cast<int>(rank1), 0, local_input_);
-  }
-
-  if (!arr.empty()) {
-    std::vector<int> merge_arr(local_input_.size() + arr.size());
-    std::merge(local_input_.begin(), local_input_.end(), arr.begin(), arr.end(), merge_arr.begin());
-
-    if (rank == rank1) {
-      local_input_.assign(merge_arr.begin(), merge_arr.begin() + local_input_.size());
-    } else {
-      local_input_.assign(merge_arr.end() - local_input_.size(), merge_arr.end());
-    }
-  }
 }
 
 bool gordeeva_t_shell_sort_batcher_merge_mpi::TestMPITaskParallel::post_processing() {
