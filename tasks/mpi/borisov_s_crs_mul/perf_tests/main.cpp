@@ -7,7 +7,6 @@
 #include "core/perf/include/perf.hpp"
 #include "mpi/borisov_s_crs_mul/include/ops_mpi.hpp"
 
-// Общая функция для генерации плотной матрицы
 static void generate_dense_matrix(int M, int N, double density, std::vector<double>& dense) {
   std::mt19937_64 gen(42);
   std::uniform_real_distribution<double> dist_val(0.1, 10.0);
@@ -23,7 +22,6 @@ static void generate_dense_matrix(int M, int N, double density, std::vector<doub
   }
 }
 
-// Общая функция для перевода плотной матрицы в CRS-формат
 static void dense_to_crs(const std::vector<double>& dense, int M, int N, std::vector<double>& values,
                          std::vector<int>& col_index, std::vector<int>& row_ptr) {
   row_ptr.resize(M + 1, 0);
