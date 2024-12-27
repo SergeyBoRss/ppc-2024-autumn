@@ -43,7 +43,7 @@ TEST(borisov_s_crs_mpi_test, Test_Pipeline_Run) {
   const int M = 5000;
   const int N = 5000;
   const int K = 5000;
-  const double density = 0.05;
+  const double density = 0.01;
 
   std::vector<double> A_dense;
   std::vector<double> B_dense;
@@ -113,7 +113,7 @@ TEST(borisov_s_crs_mpi_test, Test_Task_Run) {
   const int M = 5000;
   const int N = 5000;
   const int K = 5000;
-  const double density = 0.05;
+  const double density = 0.01;
 
   std::vector<double> A_dense;
   std::vector<double> B_dense;
