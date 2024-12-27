@@ -158,16 +158,6 @@ TEST(gordeeva_t_shell_sort_batcher_merge_mpi, Shell_sort_17_with_random) {
     testMpiTaskSequential.run();
     testMpiTaskSequential.post_processing();
   }
-
-  for (auto i:result_parallel){
-    std::cout << i << " ";
-  }
-  std::cout << std::endl;
-
-  for (auto i:result_seq){
-    std::cout << i << " ";
-  }
-  std::cout << std::endl;
   ASSERT_EQ(result_parallel, result_seq);
 }
 

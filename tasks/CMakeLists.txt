@@ -125,7 +125,8 @@ foreach(TASK_TYPE ${LIST_OF_TASKS})
     endif (USE_PERF_TESTS)
 
     set(LIST_OF_EXEC_TESTS "")
-    set(LIB_SOURCE_FILES "")
+    set(LIB_SOURCE_FILES ""
+            mpi/gordeeva_t_shell_sort_batcher_merge/func_tests/main.cpp)
     set(SRC_RES "")
     set(FUNC_TESTS_SOURCE_FILES "")
     set(PERF_TESTS_SOURCE_FILES "")
