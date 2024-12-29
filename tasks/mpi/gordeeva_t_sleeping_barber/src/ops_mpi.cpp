@@ -140,6 +140,11 @@ void gordeeva_t_sleeping_barber_mpi::TestMPITaskParallel::dispatcher_logic() {
         boost::mpi::request req = world.isend(0, 0, -1);
         req.wait();
       }
+
+      int tmp = 0;
+      world.irecv(boost::mpi::any_source, boost::mpi::any_tag, tmp);
+      local_data = tmp;
+
       break;
     }
 
