@@ -29,6 +29,8 @@ class TestMPITaskParallel : public ppc::core::Task {
   int result{};
   boost::mpi::communicator world;
 
+  int local_data;
+
   void barber_logic();
   void dispatcher_logic();
   void client_logic();
