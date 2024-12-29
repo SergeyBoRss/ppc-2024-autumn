@@ -43,7 +43,7 @@ bool gordeeva_t_sleeping_barber_mpi::TestMPITaskParallel::run() {
     client_logic();
   }
 
-  if (world.rank() == 0){
+  if (world.rank() == 0) {
     int tmp = 0;
     world.irecv(boost::mpi::any_source, boost::mpi::any_tag, tmp);
     local_data = tmp;
