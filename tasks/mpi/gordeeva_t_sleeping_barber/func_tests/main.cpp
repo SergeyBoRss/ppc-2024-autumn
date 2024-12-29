@@ -84,7 +84,7 @@ TEST(gordeeva_t_sleeping_barber_mpi, Test_End_To_End2) {
 
   std::shared_ptr<ppc::core::TaskData> taskDataPar = std::make_shared<ppc::core::TaskData>();
 
-  const int max_waiting_chairs = 2;
+  const int max_waiting_chairs = 3;
   int global_res = -1;
 
   taskDataPar->inputs_count.emplace_back(max_waiting_chairs);
@@ -114,7 +114,7 @@ TEST(gordeeva_t_sleeping_barber_mpi, Test_End_To_End3) {
 
   std::shared_ptr<ppc::core::TaskData> taskDataPar = std::make_shared<ppc::core::TaskData>();
 
-  const int max_waiting_chairs = 3;
+  const int max_waiting_chairs = 996;
   int global_res = -1;
 
   taskDataPar->inputs_count.emplace_back(max_waiting_chairs);
@@ -144,7 +144,7 @@ TEST(gordeeva_t_sleeping_barber_mpi, Test_End_To_End4) {
 
   std::shared_ptr<ppc::core::TaskData> taskDataPar = std::make_shared<ppc::core::TaskData>();
 
-  const int max_waiting_chairs = 996;
+  const int max_waiting_chairs = 999;
   int global_res = -1;
 
   taskDataPar->inputs_count.emplace_back(max_waiting_chairs);
@@ -174,7 +174,7 @@ TEST(gordeeva_t_sleeping_barber_mpi, Test_End_To_End5) {
 
   std::shared_ptr<ppc::core::TaskData> taskDataPar = std::make_shared<ppc::core::TaskData>();
 
-  const int max_waiting_chairs = 999;
+  const int max_waiting_chairs = 1024;
   int global_res = -1;
 
   taskDataPar->inputs_count.emplace_back(max_waiting_chairs);

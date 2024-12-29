@@ -43,12 +43,6 @@ bool gordeeva_t_sleeping_barber_mpi::TestMPITaskParallel::run() {
     client_logic();
   }
 
-  if (world.rank() == 0) {
-    int tmp = 0;
-    world.irecv(boost::mpi::any_source, boost::mpi::any_tag, tmp);
-    local_data = tmp;
-  }
-
   return true;
 }
 
@@ -135,16 +129,11 @@ void gordeeva_t_sleeping_barber_mpi::TestMPITaskParallel::dispatcher_logic() {
       barber_busy = false;
     }
 
-    if (waiting_clients.empty() && remaining_clients == 0) {
+    if (waiting_clients.empty() && remaining_clients == 0 && !barber_busy) {
       {
         boost::mpi::request req = world.isend(0, 0, -1);
         req.wait();
       }
-
-      int tmp = 0;
-      world.irecv(boost::mpi::any_source, boost::mpi::any_tag, tmp);
-      local_data = tmp;
-
       break;
     }
 
